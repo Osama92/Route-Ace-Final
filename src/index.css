@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 173 80% 45%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 222 30% 14%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 30% 18%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 173 80% 45%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 6%;
+
+    --info: 199 89% 48%;
+    --info-foreground: 222 47% 6%;
+
+    --border: 222 30% 16%;
+    --input: 222 30% 16%;
+    --ring: 173 80% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 173 80% 45%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 30% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 14%;
+    --sidebar-ring: 173 80% 45%;
+
+    /* Infrastructure palette */
+    --infra-blue: 215 70% 22%;
+    --infra-blue-light: 215 65% 35%;
+    --infra-teal: 173 80% 45%;
+    --infra-orange: 24 95% 53%;
+    --infra-orange-light: 32 95% 58%;
+    --infra-purple: 271 91% 65%;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(173, 80%, 45%) 0%, hsl(199, 89%, 48%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(222, 47%, 10%) 0%, hsl(222, 47%, 8%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(173, 80%, 45%, 0.15) 0%, transparent 70%);
+    --gradient-infra: linear-gradient(135deg, hsl(215, 70%, 22%) 0%, hsl(222, 47%, 8%) 100%);
+    --gradient-hero: radial-gradient(ellipse at 30% 50%, hsl(173, 80%, 45%, 0.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, hsl(199, 89%, 48%, 0.08) 0%, transparent 50%);
+
+    /* Signup card theme colors */
+    --signup-owner: 43 96% 56%;
+    --signup-owner-deep: 25 95% 53%;
+    --signup-team: 217 91% 60%;
+    --signup-team-deep: 224 76% 48%;
+    --signup-core: 271 91% 65%;
+    --signup-core-deep: 271 81% 56%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(222, 47%, 3%, 0.5);
+    --shadow-md: 0 4px 6px -1px hsl(222, 47%, 3%, 0.5), 0 2px 4px -2px hsl(222, 47%, 3%, 0.5);
+    --shadow-lg: 0 10px 15px -3px hsl(222, 47%, 3%, 0.6), 0 4px 6px -4px hsl(222, 47%, 3%, 0.6);
+    --shadow-glow: 0 0 30px hsl(173, 80%, 45%, 0.2);
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow: var(--shadow-md);
+  }
+
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-delivered {
+    @apply bg-success/15 text-success;
+  }
+
+  .status-transit {
+    @apply bg-warning/15 text-warning;
+  }
+
+  .status-pending {
+    @apply bg-info/15 text-info;
+  }
+
+  .status-delayed {
+    @apply bg-destructive/15 text-destructive;
+  }
+
+  .metric-card {
+    @apply glass-card p-6 hover:border-primary/30 transition-all duration-300;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200;
+  }
+
+  .nav-link.active {
+    @apply bg-primary/10 text-primary border-l-2 border-primary;
+  }
+
+  .data-table-row {
+    @apply border-b border-border/50 hover:bg-secondary/30 transition-colors;
+  }
+
+  .input-field {
+    @apply bg-secondary/50 border-border/50 focus:border-primary focus:ring-primary/20;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  /* Signup card styles */
+  .signup-card-owner {
+    background: linear-gradient(180deg, hsl(43, 96%, 56%, 0.08) 0%, hsl(var(--card)) 40%);
+    border-color: hsl(43, 96%, 56%, 0.25);
+  }
+  .signup-card-owner:hover {
+    border-color: hsl(43, 96%, 56%, 0.5);
+    box-shadow: 0 0 40px hsl(43, 96%, 56%, 0.12), 0 8px 32px hsl(222, 47%, 3%, 0.4);
+  }
+  .signup-card-team {
+    background: linear-gradient(180deg, hsl(217, 91%, 60%, 0.08) 0%, hsl(var(--card)) 40%);
+    border-color: hsl(217, 91%, 60%, 0.25);
+  }
+  .signup-card-team:hover {
+    border-color: hsl(217, 91%, 60%, 0.5);
+    box-shadow: 0 0 40px hsl(217, 91%, 60%, 0.12), 0 8px 32px hsl(222, 47%, 3%, 0.4);
+  }
+  .signup-card-core {
+    background: linear-gradient(180deg, hsl(271, 91%, 65%, 0.08) 0%, hsl(var(--card)) 40%);
+    border-color: hsl(271, 91%, 65%, 0.25);
+  }
+  .signup-card-core:hover {
+    border-color: hsl(271, 91%, 65%, 0.5);
+    box-shadow: 0 0 40px hsl(271, 91%, 65%, 0.12), 0 8px 32px hsl(222, 47%, 3%, 0.4);
+  }
+}
