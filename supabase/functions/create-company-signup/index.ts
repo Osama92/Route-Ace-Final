@@ -148,12 +148,15 @@ Deno.serve(async (req) => {
       },
     });
 
-    // 9. Generate email confirmation link and send via Resend (explicit, reliable delivery).
-    //    Falls back to Supabase built-in mailer if RESEND_API_KEY is not set.
+    // 9. Send verification email.
+    //    Strategy: generate the confirmation link via admin API, then try Resend first.
+    //    If Resend rejects (e.g. unverified domain → 403), fall back to Supabase's own
+    //    built-in auth mailer via POST /auth/v1/resend which works for any recipient.
     let emailSent = false;
     let confirmUrl = "";
 
     try {
+      // Get confirmation link via admin API
       const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
         type: "signup",
         email,
@@ -163,30 +166,42 @@ Deno.serve(async (req) => {
 
       if (!linkErr && linkData?.properties?.action_link) {
         confirmUrl = linkData.properties.action_link;
+      }
+      console.log("generateLink:", linkErr?.message ?? "ok", confirmUrl ? "link obtained" : "no link");
 
-        if (RESEND_API_KEY) {
-          const emailRes = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${RESEND_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              from: "RouteAce <onboarding@resend.dev>",
-              to: [email],
-              subject: "Verify your RouteAce account",
-              html: buildVerificationEmail(fullName, companyName, confirmUrl),
-            }),
-          });
-          emailSent = emailRes.ok;
-          if (!emailRes.ok) {
-            const errBody = await emailRes.text();
-            console.error("Resend error:", errBody);
-          }
+      // Try Resend first (only works if domain verified or sending to account owner)
+      if (confirmUrl && RESEND_API_KEY) {
+        const emailRes = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "RouteAce <onboarding@resend.dev>",
+            to: [email],
+            subject: "Verify your RouteAce account",
+            html: buildVerificationEmail(fullName, companyName, confirmUrl),
+          }),
+        });
+        emailSent = emailRes.ok;
+        if (!emailRes.ok) {
+          console.error("Resend failed, falling back to Supabase mailer:", await emailRes.text());
         }
       }
+
+      // Fallback: Supabase built-in auth mailer — works for any recipient, no domain needed
+      if (!emailSent) {
+        const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+        const sbRes = await fetch(`${SUPABASE_URL}/auth/v1/resend`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": ANON_KEY },
+          body: JSON.stringify({ type: "signup", email }),
+        });
+        emailSent = sbRes.ok;
+        console.log("Supabase mailer result:", sbRes.status, await sbRes.text());
+      }
     } catch (emailErr) {
-      // Email failure is non-fatal — account is created, admin can resend from dashboard.
       console.error("Verification email error:", emailErr);
     }
 
