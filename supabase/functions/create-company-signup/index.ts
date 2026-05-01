@@ -23,7 +23,7 @@ interface Body {
   tenant_mode?: string;
 }
 
-const SITE_URL = "https://app.routeace.io";
+const SITE_URL = "https://route-ace-final.vercel.app";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -196,7 +196,11 @@ Deno.serve(async (req) => {
         const sbRes = await fetch(`${SUPABASE_URL}/auth/v1/resend`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "apikey": ANON_KEY },
-          body: JSON.stringify({ type: "signup", email }),
+          body: JSON.stringify({
+            type: "signup",
+            email,
+            redirect_to: `${SITE_URL}/auth`,
+          }),
         });
         emailSent = sbRes.ok;
         console.log("Supabase mailer result:", sbRes.status, await sbRes.text());
